@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes y Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+   <div class="text-center mb-3">
+      <img src="insignia.png" alt="Insignia del Colegio" style="max-height: 90px;" class="mb-2">
+      <h2 class="fw-bold">I.E 81007 MODELO - REPORTE DE INCIDENCIAS</h2>
+    </div>
+
+    <div class="d-flex justify-content-start mb-4">
+      <a href="index.html" class="btn btn-secondary">← Volver al Registro</a>
+    </div>
+
+    <!-- Panel de Filtros -->
+    <div class="card p-3 shadow-sm mb-4">
+      <h5>🔍 Filtros de Búsqueda</h5>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Fecha</label>
+          <input type="date" id="filtroFecha" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Grado</label>
+          <select id="filtroGrado" class="form-select">
+            <option value="">Todos los grados</option>
+            <option value="1ro Secundaria">1ro Secundaria</option>
+            <option value="2do Secundaria">2do Secundaria</option>
+            <option value="3ro Secundaria">3ro Secundaria</option>
+            <option value="4to Secundaria">4to Secundaria</option>
+            <option value="5to Secundaria">5to Secundaria</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Sección / Aula</label>
+          <select id="filtroAula" class="form-select">
+            <option value="">Todas las secciones</option>
+            <option value="Sección A">Sección A</option>
+            <option value="Sección B">Sección B</option>
+            <option value="Sección C">Sección C</option>
+            <option value="Sección D">Sección D</option>
+            <option value="Sección E">Sección E</option>
+            <option value="Sección F">Sección F</option>
+            <option value="Sección G">Sección G</option>
+            <option value="Sección H">Sección H</option>
+          </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end gap-2">
+          <button id="btnLimpiarFiltros" class="btn btn-outline-secondary w-100">Limpiar Filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+          <h5 class="card-title text-center">Incidencias por Estado</h5>
+          <div style="position: relative; height:280px;">
+            <canvas id="chartEstado"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+          <h5 class="card-title text-center">Incidencias por Grado</h5>
+          <div style="position: relative; height:280px;">
+            <canvas id="chartGrado"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Historial -->
+    <div class="card p-4 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>📋 Historial Detallado de Registros</h4>
+        <div>
+          <button id="btnExportExcel" class="btn btn-success btn-sm me-2">📥 Exportar a Excel</button>
+          <button id="btnExportPDF" class="btn btn-danger btn-sm">📄 Exportar a PDF</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle" id="tablaAsistencia">
+          <thead class="table-dark">
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Estudiante</th>
+              <th>Grado</th>
+              <th>Aula/Sección</th>
+              <th>Área Curricular</th>
+              <th>Estado</th>
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyRegistros">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="charts.js"></script>
+</body>
+</html>
