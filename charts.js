@@ -1,3 +1,4 @@
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCqheRJkcSJVPG1XuMEiZlithQKUYV9JKE",
   authDomain: "control-de-asistencia-aef47.firebaseapp.com",
@@ -9,7 +10,10 @@ const firebaseConfig = {
   measurementId: "G-56QDYD0B6Y"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Evitar error si Firebase ya fue inicializado en otra vista
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const database = firebase.database();
 
 let todosLosRegistros = [];
@@ -17,6 +21,11 @@ let chartEstadoInstance = null;
 let chartGradoInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Establecer por defecto la fecha de hoy en el filtro
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('filtroFecha').value = hoy;
+
+  // Escuchar cambios en tiempo real desde Firebase Database
   database.ref('asistencia').on('value', (snapshot) => {
     const data = snapshot.val();
     todosLosRegistros = [];
@@ -30,9 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     aplicarFiltrosYRenderizar();
   });
 
+  // Listeners para los filtros
   document.getElementById('filtroFecha').addEventListener('change', aplicarFiltrosYRenderizar);
   document.getElementById('filtroGrado').addEventListener('change', aplicarFiltrosYRenderizar);
   document.getElementById('filtroAula').addEventListener('change', aplicarFiltrosYRenderizar);
+  
+  // Botón para limpiar filtros
   document.getElementById('btnLimpiarFiltros').addEventListener('click', () => {
     document.getElementById('filtroFecha').value = '';
     document.getElementById('filtroGrado').value = '';
@@ -40,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     aplicarFiltrosYRenderizar();
   });
 
+  // Exportaciones
   document.getElementById('btnExportExcel').addEventListener('click', exportarExcel);
   document.getElementById('btnExportPDF').addEventListener('click', exportarPDF);
 });
