@@ -1,4 +1,4 @@
-// 1. Configuración de Firebase
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCqheRJkcSJVPG1XuMEiZlithQKUYV9JKE",
   authDomain: "control-de-asistencia-aef47.firebaseapp.com",
@@ -10,85 +10,98 @@ const firebaseConfig = {
   measurementId: "G-56QDYD0B6Y"
 };
 
-// Evitar errores de inicialización duplicada
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const database = firebase.database();
 
-// 2. Cargar lista de estudiantes según Grado y Sección seleccionados
+// Cargar lista de estudiantes con Checkboxes
 function cargarEstudiantes() {
   const gradoSelect = document.getElementById('grado').value;
   const aulaSelect = document.getElementById('aula').value;
-  const selectEstudiante = document.getElementById('estudiante');
+  const contenedor = document.getElementById('contenedorEstudiantes');
 
-  selectEstudiante.innerHTML = '<option value="">Seleccionar estudiante...</option>';
+  contenedor.innerHTML = '';
 
   if (gradoSelect && aulaSelect && typeof nominaEstudiantes !== 'undefined' && nominaEstudiantes[gradoSelect] && nominaEstudiantes[gradoSelect][aulaSelect]) {
-    selectEstudiante.disabled = false;
     const lista = nominaEstudiantes[gradoSelect][aulaSelect];
     
-    lista.forEach(estudiante => {
-      const option = document.createElement('option');
-      option.value = estudiante;
-      option.textContent = estudiante;
-      selectEstudiante.appendChild(option);
+    lista.forEach((estudiante, idx) => {
+      const div = document.createElement('div');
+      div.className = 'form-check';
+      div.innerHTML = `
+        <input class="form-check-input chk-estudiante" type="checkbox" value="${estudiante}" id="chk_${idx}">
+        <label class="form-check-label small" for="chk_${idx}">
+          ${estudiante}
+        </label>
+      `;
+      contenedor.appendChild(div);
     });
   } else {
-    selectEstudiante.disabled = true;
-    selectEstudiante.innerHTML = '<option value="">Primero selecciona grado y sección...</option>';
+    contenedor.innerHTML = '<span class="text-muted small">Primero selecciona grado y sección...</span>';
   }
 }
 
-// Escuchar cambios en los desplegables de Grado y Sección
 document.getElementById('grado').addEventListener('change', cargarEstudiantes);
 document.getElementById('aula').addEventListener('change', cargarEstudiantes);
 
-// 3. Lógica para guardar el registro en Firebase Realtime Database
+// Guardar múltiples estudiantes seleccionados
 document.getElementById('attendanceForm').addEventListener('submit', function(e) {
   e.preventDefault();
+
+  // Obtener todos los alumnos marcados
+  const checkboxes = document.querySelectorAll('.chk-estudiante:checked');
+  
+  if (checkboxes.length === 0) {
+    alert('Por favor selecciona al menos un estudiante de la lista.');
+    return;
+  }
 
   const btnGuardar = document.getElementById('btnGuardar');
   btnGuardar.disabled = true;
   btnGuardar.textContent = "Guardando...";
 
-  // Generar fechas en el formato correcto
   const ahora = new Date();
-  
-  // Formato YYYY-MM-DD necesario para que el filtro de fecha en reportes lo reconozca
   const ano = ahora.getFullYear();
   const mes = String(ahora.getMonth() + 1).padStart(2, '0');
   const dia = String(ahora.getDate()).padStart(2, '0');
   const fechaFiltro = `${ano}-${mes}-${dia}`; 
 
-  // Formato D/M/YYYY HH:MM para mostrar legiblemente en la tabla
   const horas = String(ahora.getHours()).padStart(2, '0');
   const minutos = String(ahora.getMinutes()).padStart(2, '0');
   const fechaFormateada = `${ahora.getDate()}/${ahora.getMonth() + 1}/${ano} ${horas}:${minutos}`;
 
-  const nuevoRegistro = {
-    grado: document.getElementById('grado').value,
-    aula: document.getElementById('aula').value,
-    area: document.getElementById('area').value,
-    estudiante: document.getElementById('estudiante').value,
-    estado: document.getElementById('estado').value,
-    fecha: fechaFormateada,
-    fechaFiltro: fechaFiltro
-  };
+  const grado = document.getElementById('grado').value;
+  const aula = document.getElementById('aula').value;
+  const area = document.getElementById('area').value;
+  const estado = document.getElementById('estado').value;
 
-  // Enviar a Firebase Database
-  database.ref('asistencia').push(nuevoRegistro)
+  // Promesas para guardar en lote en Firebase
+  const promesas = Array.from(checkboxes).map(chk => {
+    const nuevoRegistro = {
+      grado: grado,
+      aula: aula,
+      area: area,
+      estudiante: chk.value,
+      estado: estado,
+      fecha: fechaFormateada,
+      fechaFiltro: fechaFiltro
+    };
+    return database.ref('asistencia').push(nuevoRegistro);
+  });
+
+  Promise.all(promesas)
     .then(() => {
-      alert('¡Registro de asistencia guardado con éxito!');
+      alert(`¡Se registraron con éxito ${checkboxes.length} estudiante(s)!`);
       document.getElementById('attendanceForm').reset();
-      cargarEstudiantes(); // Limpiar y deshabilitar desplegable de estudiantes
+      cargarEstudiantes();
     })
     .catch((error) => {
-      console.error("Error al guardar en Firebase:", error);
-      alert('Hubo un error al guardar el registro. Por favor intente de nuevo.');
+      console.error("Error al guardar:", error);
+      alert('Hubo un error al guardar los registros. Intenta nuevamente.');
     })
     .finally(() => {
       btnGuardar.disabled = false;
-      btnGuardar.textContent = "Guardar Registro";
+      btnGuardar.textContent = "Guardar Registros";
     });
 });
