@@ -45,11 +45,10 @@ function cargarEstudiantes() {
 document.getElementById('grado').addEventListener('change', cargarEstudiantes);
 document.getElementById('aula').addEventListener('change', cargarEstudiantes);
 
-// Guardar múltiples estudiantes seleccionados
+// Guardar registros con Docente / Responsable
 document.getElementById('attendanceForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  // Obtener todos los alumnos marcados
   const checkboxes = document.querySelectorAll('.chk-estudiante:checked');
   
   if (checkboxes.length === 0) {
@@ -71,14 +70,15 @@ document.getElementById('attendanceForm').addEventListener('submit', function(e)
   const minutos = String(ahora.getMinutes()).padStart(2, '0');
   const fechaFormateada = `${ahora.getDate()}/${ahora.getMonth() + 1}/${ano} ${horas}:${minutos}`;
 
+  const docente = document.getElementById('docente').value;
   const grado = document.getElementById('grado').value;
   const aula = document.getElementById('aula').value;
   const area = document.getElementById('area').value;
   const estado = document.getElementById('estado').value;
 
-  // Promesas para guardar en lote en Firebase
   const promesas = Array.from(checkboxes).map(chk => {
     const nuevoRegistro = {
+      docente: docente,
       grado: grado,
       aula: aula,
       area: area,
