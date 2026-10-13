@@ -24,6 +24,68 @@
     <div class="card shadow-sm p-4">
       <form id="attendanceForm">
         <div class="row g-3">
+          
+          <!-- Docente / Responsable -->
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Docente / Responsable</label>
+            <select id="docente" class="form-select" required>
+              <option value="">Seleccionar docente...</option>
+              <option value="ARANCIBIA ARROYO CARLOS">ARANCIBIA ARROYO CARLOS</option>
+              <option value="ARGOMEDO CORNELIO SOLEDAD">ARGOMEDO CORNELIO SOLEDAD</option>
+              <option value="ARMAS AGUILAR ISABEL">ARMAS AGUILAR ISABEL</option>
+              <option value="ARMAS ENCINA JAIME">ARMAS ENCINA JAIME</option>
+              <option value="AROCA VENEROS FANI">AROCA VENEROS FANI</option>
+              <option value="ASMAT ROJAS BELGICA">ASMAT ROJAS BELGICA</option>
+              <option value="BACILIO RODRIGUEZ CLEMENTINA">BACILIO RODRIGUEZ CLEMENTINA</option>
+              <option value="BARBOZA SEVILLA CELINA">BARBOZA SEVILLA CELINA</option>
+              <option value="BARDALES LEON WILLY">BARDALES LEON WILLY</option>
+              <option value="BARRUETO ROMO LUZ">BARRUETO ROMO LUZ</option>
+              <option value="BERROSPI ESPINOZA LILIAN">BERROSPI ESPINOZA LILIAN</option>
+              <option value="BLAS FERREL VERONICA">BLAS FERREL VERONICA</option>
+              <option value="BRICEÑO RONDON VIOLETA">BRICEÑO RONDON VIOLETA</option>
+              <option value="CARDENAS ROCA ROGER">CARDENAS ROCA ROGER</option>
+              <option value="CARRANZA SANCHEZ CECILIA">CARRANZA SANCHEZ CECILIA</option>
+              <option value="CASANOVA MIRANDA MONICA">CASANOVA MIRANDA MONICA</option>
+              <option value="CASTILLO MANTILLA SUSANA">CASTILLO MANTILLA SUSANA</option>
+              <option value="CASTRO CASTILLO CARMEN">CASTRO CASTILLO CARMEN</option>
+              <option value="CHU THAM CARMEN">CHU THAM CARMEN</option>
+              <option value="CORCUERA LUJAN FIORELA">CORCUERA LUJAN FIORELA</option>
+              <option value="CRUZ HUANCAYO DALIA">CRUZ HUANCAYO DALIA</option>
+              <option value="DIAZ GRADOS CARMELA">DIAZ GRADOS CARMELA</option>
+              <option value="FELIPE SANCHEZ JUDITH">FELIPE SANCHEZ JUDITH</option>
+              <option value="GARCIA GARCIA LUIS">GARCIA GARCIA LUIS</option>
+              <option value="GUEVARA VALLE TATIANA KATHERINE">GUEVARA VALLE TATIANA KATHERINE</option>
+              <option value="HERRERA VALQUI RAMIRO">HERRERA VALQUI RAMIRO</option>
+              <option value="LEON HUERTAS EDWIN">LEON HUERTAS EDWIN</option>
+              <option value="LEZCANO VASQUEZ MARTIN">LEZCANO VASQUEZ MARTIN</option>
+              <option value="MARCELO SARA">MARCELO SARA</option>
+              <option value="MARTIN VERGARA ANIBAL">MARTIN VERGARA ANIBAL</option>
+              <option value="MILLA VENTURA PEDRO">MILLA VENTURA PEDRO</option>
+              <option value="NAVARRO CUBAS PEDRO">NAVARRO CUBAS PEDRO</option>
+              <option value="NEYRA VASQUEZ VILMA">NEYRA VASQUEZ VILMA</option>
+              <option value="OBREGON HILDA">OBREGON HILDA</option>
+              <option value="OLIVOS SANCHEZ MARÍA ISABEL">OLIVOS SANCHEZ MARÍA ISABEL</option>
+              <option value="PEREZ AVELLANEDA EDSON">PEREZ AVELLANEDA EDSON</option>
+              <option value="PEREZ PORTUGAL GUADALUPE">PEREZ PORTUGAL GUADALUPE</option>
+              <option value="PERICHE CURO MARIBEL">PERICHE CURO MARIBEL</option>
+              <option value="QUESADA GUERRA ROSA">QUESADA GUERRA ROSA</option>
+              <option value="QUIROZ MORGADO MARIA">QUIROZ MORGADO MARIA</option>
+              <option value="QUISPE POSADAS MARINO">QUISPE POSADAS MARINO</option>
+              <option value="REYES ALTAMIRANO SANDY MINERVA">REYES ALTAMIRANO SANDY MINERVA</option>
+              <option value="REYES CASTRO MARIA">REYES CASTRO MARIA</option>
+              <option value="REYES CUZCO DANY">REYES CUZCO DANY</option>
+              <option value="ROSALES MUNDACA DANTE">ROSALES MUNDACA DANTE</option>
+              <option value="SANCHEZ GUTIERREZ YENI">SANCHEZ GUTIERREZ YENI</option>
+              <option value="SILVA CALUA CESAR">SILVA CALUA CESAR</option>
+              <option value="SUAREZ ARMAS MILAGROS">SUAREZ ARMAS MILAGROS</option>
+              <option value="URQUIAGA FERNANDEZ MILAGROS">URQUIAGA FERNANDEZ MILAGROS</option>
+              <option value="VASQUEZ VEGA MARIO">VASQUEZ VEGA MARIO</option>
+              <option value="VILLARREAL VENEGAS ROCIO">VILLARREAL VENEGAS ROCIO</option>
+              <option value="ZAVALETA CASTAÑEDA ROCIO">ZAVALETA CASTAÑEDA ROCIO</option>
+            </select>
+          </div>
+
+          <!-- Grado -->
           <div class="col-md-2">
             <label class="form-label fw-semibold">Grado</label>
             <select id="grado" class="form-select" required>
@@ -36,6 +98,7 @@
             </select>
           </div>
 
+          <!-- Sección / Aula -->
           <div class="col-md-2">
             <label class="form-label fw-semibold">Sección / Aula</label>
             <select id="aula" class="form-select" required>
@@ -51,7 +114,8 @@
             </select>
           </div>
 
-          <div class="col-md-3">
+          <!-- Área Curricular -->
+          <div class="col-md-4">
             <label class="form-label fw-semibold">Área Curricular</label>
             <select id="area" class="form-select" required>
               <option value="">Seleccionar...</option>
@@ -68,15 +132,16 @@
             </select>
           </div>
 
-          <div class="col-md-3">
+          <!-- Estudiantes con checkboxes -->
+          <div class="col-md-8">
             <label class="form-label fw-semibold">Estudiante(s)</label>
-            <!-- Lista con checkboxes para selección múltiple -->
             <div id="contenedorEstudiantes" class="border rounded p-2 bg-white" style="max-height: 180px; overflow-y: auto;">
               <span class="text-muted small">Primero selecciona grado y sección...</span>
             </div>
           </div>
 
-          <div class="col-md-2">
+          <!-- Estado -->
+          <div class="col-md-4">
             <label class="form-label fw-semibold">Estado</label>
             <select id="estado" class="form-select" required>
               <option value="Tardanza">Tardanza</option>
