@@ -10,7 +10,6 @@ const firebaseConfig = {
   measurementId: "G-56QDYD0B6Y"
 };
 
-// Evitar error si Firebase ya fue inicializado en otra vista
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -21,11 +20,9 @@ let chartEstadoInstance = null;
 let chartGradoInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Establecer por defecto la fecha de hoy en el filtro
   const hoy = new Date().toISOString().split('T')[0];
   document.getElementById('filtroFecha').value = hoy;
 
-  // Escuchar cambios en tiempo real desde Firebase Database
   database.ref('asistencia').on('value', (snapshot) => {
     const data = snapshot.val();
     todosLosRegistros = [];
@@ -39,12 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
     aplicarFiltrosYRenderizar();
   });
 
-  // Listeners para los filtros
   document.getElementById('filtroFecha').addEventListener('change', aplicarFiltrosYRenderizar);
   document.getElementById('filtroGrado').addEventListener('change', aplicarFiltrosYRenderizar);
   document.getElementById('filtroAula').addEventListener('change', aplicarFiltrosYRenderizar);
   
-  // Botón para limpiar filtros
   document.getElementById('btnLimpiarFiltros').addEventListener('click', () => {
     document.getElementById('filtroFecha').value = '';
     document.getElementById('filtroGrado').value = '';
@@ -52,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     aplicarFiltrosYRenderizar();
   });
 
-  // Exportaciones
   document.getElementById('btnExportExcel').addEventListener('click', exportarExcel);
   document.getElementById('btnExportPDF').addEventListener('click', exportarPDF);
 });
@@ -78,7 +72,7 @@ function renderizarTabla(registros) {
   tbody.innerHTML = '';
 
   if (registros.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No se encontraron registros.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No se encontraron registros.</td></tr>`;
     return;
   }
 
@@ -91,6 +85,7 @@ function renderizarTabla(registros) {
       <td>${r.grado}</td>
       <td>${r.aula}</td>
       <td>${r.area || 'N/A'}</td>
+      <td>${r.docente || 'N/A'}</td>
       <td><span class="badge ${badgeClass}">${r.estado}</span></td>
       <td class="text-center">
         <button class="btn btn-outline-danger btn-sm" onclick="eliminarRegistro('${r.id}')">Eliminar</button>
@@ -164,7 +159,7 @@ function exportarPDF() {
   doc.autoTable({
     html: '#tablaAsistencia',
     startY: 20,
-    columns: [0, 1, 2, 3, 4, 5]
+    columns: [0, 1, 2, 3, 4, 5, 6]
   });
 
   doc.save("Reporte_Asistencia.pdf");
