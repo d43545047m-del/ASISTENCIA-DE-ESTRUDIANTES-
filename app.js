@@ -9,43 +9,38 @@ const firebaseConfig = {
   appId: "1:918828594178:web:e44ff1902cfc4502fca31b"
 };
 
-// Inicializar Firebase Compat
+// Inicializar Firebase
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-// Base de datos local de estudiantes si nominaEstudiantes.js no se ha cargado externamente
-if (typeof window.nominaEstudiantes === 'undefined') {
-  window.nominaEstudiantes = {
-    "1ro Secundaria": {
-      "Sección A": ["ACEVEDO VASQUEZ, CELESTE DE LOS ANGELES", "AGUILAR CARDOZO, TATIANA", "ALAYO FLORES, MARIAFE BELLAMIRA", "ARTEAGA ALVARADO, AYXA VALERIA", "CARDENAS ACOSTA, CAMILA LUCERO", "CARDENAS VALLES, FATIMA FIORELA"],
-      "Sección B": ["ALVAREZ MARIN, SOFIA", "BERMUDEZ RIOS, LUCIA", "CABANILLAS DIAZ, ANA"],
-      "Sección C": ["CASTRO GOMEZ, VALENTINA", "DIAZ TORRES, FERNANDA"]
-    },
-    "2do Secundaria": {
-      "Sección A": ["ESPINOZA RUIZ, CAMILA", "FLORES MENDOZA, CARLA"],
-      "Sección B": ["GARCIA LOPEZ, DANIELA", "HERRERA ROJAS, FABIANA"],
-      "Sección C": ["INCA ROJAS, PAOLA", "JUAREZ PAREDES, MARIA"]
-    },
-    "3ro Secundaria": {
-      "Sección A": ["IBANEZ VEGA, GABRIELA", "JIMENEZ CRUZ, HELEN"],
-      "Sección B": ["LEON SILVA, ISABELA", "MARTINEZ PAREDES, JULIA"],
-      "Sección C": ["MORALES ORTIZ, KIARA", "NAVARRO GUTIERREZ, LIA", "NUNEZ QUINTERO, MARIA"]
-    },
-    "4to Secundaria": {
-      "Sección A": ["OLIVARES REYES, NATALIA", "PEREZ SANCHEZ, PAOLA"],
-      "Sección B": ["QUINTERO RAMOS, ROSA", "RODRIGUEZ SOTO, VALERIA"],
-      "Sección C": ["SALAZAR LOPEZ, SOFIA", "TORRES MENDOZA, ANA"]
-    },
-    "5to Secundaria": {
-      "Sección A": ["SANCHEZ CASTRO, ANDREA", "TORRES VARGAS, BIANCA"],
-      "Sección B": ["URBINA CHAVEZ, CAROLINA", "VALDEZ MORA, DIANA"],
-      "Sección C": ["ZAMBRANO RUIZ, ELENA", "ZAPATA PAREDES, LUCIA"]
-    }
-  };
-}
+// Nómina respaldada dentro del mismo script
+const nominaInterna = {
+  "1ro Secundaria": {
+    "Sección A": ["ACEVEDO VASQUEZ, CELESTE DE LOS ANGELES", "AGUILAR CARDOZO, TATIANA", "ALAYO FLORES, MARIAFE BELLAMIRA", "ARTEAGA ALVARADO, AYXA VALERIA", "CARDENAS ACOSTA, CAMILA LUCERO"],
+    "Sección B": ["ALVAREZ MARIN, SOFIA", "BERMUDEZ RIOS, LUCIA", "CABANILLAS DIAZ, ANA"],
+    "Sección C": ["CASTRO GOMEZ, VALENTINA", "DIAZ TORRES, FERNANDA"]
+  },
+  "2do Secundaria": {
+    "Sección A": ["ESPINOZA RUIZ, CAMILA", "FLORES MENDOZA, CARLA"],
+    "Sección B": ["GARCIA LOPEZ, DANIELA", "HERRERA ROJAS, FABIANA"]
+  },
+  "3ro Secundaria": {
+    "Sección A": ["IBANEZ VEGA, GABRIELA", "JIMENEZ CRUZ, HELEN"],
+    "Sección B": ["LEON SILVA, ISABELA", "MARTINEZ PAREDES, JULIA"],
+    "Sección C": ["MORALES ORTIZ, KIARA", "NAVARRO GUTIERREZ, LIA", "NUNEZ QUINTERO, MARIA"]
+  },
+  "4to Secundaria": {
+    "Sección A": ["OLIVARES REYES, NATALIA", "PEREZ SANCHEZ, PAOLA"],
+    "Sección B": ["QUINTERO RAMOS, ROSA", "RODRIGUEZ SOTO, VALERIA"]
+  },
+  "5to Secundaria": {
+    "Sección A": ["SANCHEZ CASTRO, ANDREA", "TORRES VARGAS, BIANCA"],
+    "Sección B": ["URBINA CHAVEZ, CAROLINA", "VALDEZ MORA, DIANA"]
+  }
+};
 
-// Función principal para renderizar la lista de estudiantes
+// Función para renderizar la lista
 function cargarEstudiantes() {
   const elGrado = document.getElementById('grado');
   const elAula = document.getElementById('aula');
@@ -53,8 +48,8 @@ function cargarEstudiantes() {
 
   if (!contenedor) return;
 
-  const grado = elGrado ? elGrado.value : '';
-  const aula = elAula ? elAula.value : '';
+  const grado = elGrado ? elGrado.value.trim() : '';
+  const aula = elAula ? elAula.value.trim() : '';
 
   contenedor.innerHTML = '';
 
@@ -63,24 +58,26 @@ function cargarEstudiantes() {
     return;
   }
 
-  // Buscar lista en la nómina
-  const datosNomina = window.nominaEstudiantes;
-  let lista = [];
-
-  if (datosNomina && datosNomina[grado] && datosNomina[grado][aula]) {
-    lista = datosNomina[grado][aula];
+  // Verificar en nómina global externa o en nómina interna
+  let lista = null;
+  if (typeof window.nominaEstudiantes !== 'undefined' && window.nominaEstudiantes[grado]) {
+    lista = window.nominaEstudiantes[grado][aula];
+  }
+  if (!lista && nominaInterna[grado]) {
+    lista = nominaInterna[grado][aula];
   }
 
-  // Si no se encuentra en el objeto, generar lista modelo para la prueba
-  if (lista.length === 0) {
+  // Generación de lista por defecto para secciones adicionales (D, E, F, G, H)
+  if (!lista || lista.length === 0) {
     lista = [
-      `ESTUDIANTE 01 (${grado} - ${aula})`,
-      `ESTUDIANTE 02 (${grado} - ${aula})`,
-      `ESTUDIANTE 03 (${grado} - ${aula})`,
-      `ESTUDIANTE 04 (${grado} - ${aula})`
+      `ALUMNO 01 (${grado} - ${aula})`,
+      `ALUMNO 02 (${grado} - ${aula})`,
+      `ALUMNO 03 (${grado} - ${aula})`,
+      `ALUMNO 04 (${grado} - ${aula})`
     ];
   }
 
+  // Insertar en HTML
   lista.forEach((estudiante, idx) => {
     const div = document.createElement('div');
     div.className = 'form-check my-1';
@@ -94,23 +91,18 @@ function cargarEstudiantes() {
   });
 }
 
-// Inicialización de Eventos
+// Eventos de escucha
 document.addEventListener('DOMContentLoaded', () => {
   const elGrado = document.getElementById('grado');
   const elAula = document.getElementById('aula');
   const elForm = document.getElementById('attendanceForm');
 
-  if (elGrado) {
-    elGrado.addEventListener('change', cargarEstudiantes);
-  }
-  if (elAula) {
-    elAula.addEventListener('change', cargarEstudiantes);
-  }
+  if (elGrado) elGrado.addEventListener('change', cargarEstudiantes);
+  if (elAula) elAula.addEventListener('change', cargarEstudiantes);
 
-  // Carga automática inicial si los campos ya vienen preseleccionados por el navegador
-  setTimeout(cargarEstudiantes, 200);
+  // Intentar renderizado inicial
+  cargarEstudiantes();
 
-  // Envío a Firebase
   if (elForm) {
     elForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -164,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch((error) => {
           console.error("Error al guardar en Firebase:", error);
-          alert('Hubo un error al guardar en la base de datos.');
+          alert('Hubo un error al guardar los registros.');
         })
         .finally(() => {
           if (btnGuardar) {
