@@ -1,4 +1,4 @@
-// Configuración e Inicialización de Firebase
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCqheRJkcSJVPG1XuMEiZlithQKUYV9JKE",
   authDomain: "control-de-asistencia-aef47.firebaseapp.com",
@@ -17,11 +17,15 @@ const database = firebase.database();
 
 // Cargar lista de estudiantes con Checkboxes
 function cargarEstudiantes() {
-  const gradoSelect = document.getElementById('grado') ? document.getElementById('grado').value : '';
-  const aulaSelect = document.getElementById('aula') ? document.getElementById('aula').value : '';
+  const gradoElem = document.getElementById('grado');
+  const aulaElem = document.getElementById('aula');
   const contenedor = document.getElementById('contenedorEstudiantes');
 
   if (!contenedor) return;
+
+  const gradoSelect = gradoElem ? gradoElem.value : '';
+  const aulaSelect = aulaElem ? aulaElem.value : '';
+
   contenedor.innerHTML = '';
 
   if (gradoSelect && aulaSelect && typeof nominaEstudiantes !== 'undefined' && nominaEstudiantes[gradoSelect] && nominaEstudiantes[gradoSelect][aulaSelect]) {
@@ -78,12 +82,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const minutos = String(ahora.getMinutes()).padStart(2, '0');
       const fechaFormateada = `${ahora.getDate()}/${ahora.getMonth() + 1}/${ano} ${horas}:${minutos}`;
 
-      // Validación segura de lectura de campos
-      const docente = document.getElementById('docente') ? document.getElementById('docente').value : 'N/A';
-      const grado = document.getElementById('grado') ? document.getElementById('grado').value : '';
-      const aula = document.getElementById('aula') ? document.getElementById('aula').value : '';
-      const area = document.getElementById('area') ? document.getElementById('area').value : 'N/A';
-      const estado = document.getElementById('estado') ? document.getElementById('estado').value : 'Tardanza';
+      const elDocente = document.getElementById('docente');
+      const elGrado = document.getElementById('grado');
+      const elAula = document.getElementById('aula');
+      const elArea = document.getElementById('area');
+      const elEstado = document.getElementById('estado');
+
+      const docente = elDocente ? elDocente.value : 'N/A';
+      const grado = elGrado ? elGrado.value : '';
+      const aula = elAula ? elAula.value : '';
+      const area = elArea ? elArea.value : 'N/A';
+      const estado = elEstado ? elEstado.value : 'Tardanza';
 
       const promesas = Array.from(checkboxes).map(chk => {
         const nuevoRegistro = {
