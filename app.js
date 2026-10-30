@@ -1,4 +1,4 @@
-// Configuración de Firebase
+// Configuración e Inicialización de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCqheRJkcSJVPG1XuMEiZlithQKUYV9JKE",
   authDomain: "control-de-asistencia-aef47.firebaseapp.com",
@@ -17,10 +17,11 @@ const database = firebase.database();
 
 // Cargar lista de estudiantes con Checkboxes
 function cargarEstudiantes() {
-  const gradoSelect = document.getElementById('grado').value;
-  const aulaSelect = document.getElementById('aula').value;
+  const gradoSelect = document.getElementById('grado') ? document.getElementById('grado').value : '';
+  const aulaSelect = document.getElementById('aula') ? document.getElementById('aula').value : '';
   const contenedor = document.getElementById('contenedorEstudiantes');
 
+  if (!contenedor) return;
   contenedor.innerHTML = '';
 
   if (gradoSelect && aulaSelect && typeof nominaEstudiantes !== 'undefined' && nominaEstudiantes[gradoSelect] && nominaEstudiantes[gradoSelect][aulaSelect]) {
@@ -42,66 +43,78 @@ function cargarEstudiantes() {
   }
 }
 
-document.getElementById('grado').addEventListener('change', cargarEstudiantes);
-document.getElementById('aula').addEventListener('change', cargarEstudiantes);
+document.addEventListener('DOMContentLoaded', () => {
+  const elGrado = document.getElementById('grado');
+  const elAula = document.getElementById('aula');
+  const elForm = document.getElementById('attendanceForm');
 
-// Guardar registros con Docente / Responsable
-document.getElementById('attendanceForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+  if (elGrado) elGrado.addEventListener('change', cargarEstudiantes);
+  if (elAula) elAula.addEventListener('change', cargarEstudiantes);
 
-  const checkboxes = document.querySelectorAll('.chk-estudiante:checked');
-  
-  if (checkboxes.length === 0) {
-    alert('Por favor selecciona al menos un estudiante de la lista.');
-    return;
-  }
+  if (elForm) {
+    elForm.addEventListener('submit', function(e) {
+      e.preventDefault();
 
-  const btnGuardar = document.getElementById('btnGuardar');
-  btnGuardar.disabled = true;
-  btnGuardar.textContent = "Guardando...";
+      const checkboxes = document.querySelectorAll('.chk-estudiante:checked');
+      
+      if (checkboxes.length === 0) {
+        alert('Por favor selecciona al menos un estudiante de la lista.');
+        return;
+      }
 
-  const ahora = new Date();
-  const ano = ahora.getFullYear();
-  const mes = String(ahora.getMonth() + 1).padStart(2, '0');
-  const dia = String(ahora.getDate()).padStart(2, '0');
-  const fechaFiltro = `${ano}-${mes}-${dia}`; 
+      const btnGuardar = document.getElementById('btnGuardar');
+      if (btnGuardar) {
+        btnGuardar.disabled = true;
+        btnGuardar.textContent = "Guardando...";
+      }
 
-  const horas = String(ahora.getHours()).padStart(2, '0');
-  const minutos = String(ahora.getMinutes()).padStart(2, '0');
-  const fechaFormateada = `${ahora.getDate()}/${ahora.getMonth() + 1}/${ano} ${horas}:${minutos}`;
+      const ahora = new Date();
+      const ano = ahora.getFullYear();
+      const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+      const dia = String(ahora.getDate()).padStart(2, '0');
+      const fechaFiltro = `${ano}-${mes}-${dia}`; 
 
-  const docente = document.getElementById('docente').value;
-  const grado = document.getElementById('grado').value;
-  const aula = document.getElementById('aula').value;
-  const area = document.getElementById('area').value;
-  const estado = document.getElementById('estado').value;
+      const horas = String(ahora.getHours()).padStart(2, '0');
+      const minutos = String(ahora.getMinutes()).padStart(2, '0');
+      const fechaFormateada = `${ahora.getDate()}/${ahora.getMonth() + 1}/${ano} ${horas}:${minutos}`;
 
-  const promesas = Array.from(checkboxes).map(chk => {
-    const nuevoRegistro = {
-      docente: docente,
-      grado: grado,
-      aula: aula,
-      area: area,
-      estudiante: chk.value,
-      estado: estado,
-      fecha: fechaFormateada,
-      fechaFiltro: fechaFiltro
-    };
-    return database.ref('asistencia').push(nuevoRegistro);
-  });
+      // Validación segura de lectura de campos
+      const docente = document.getElementById('docente') ? document.getElementById('docente').value : 'N/A';
+      const grado = document.getElementById('grado') ? document.getElementById('grado').value : '';
+      const aula = document.getElementById('aula') ? document.getElementById('aula').value : '';
+      const area = document.getElementById('area') ? document.getElementById('area').value : 'N/A';
+      const estado = document.getElementById('estado') ? document.getElementById('estado').value : 'Tardanza';
 
-  Promise.all(promesas)
-    .then(() => {
-      alert(`¡Se registraron con éxito ${checkboxes.length} estudiante(s)!`);
-      document.getElementById('attendanceForm').reset();
-      cargarEstudiantes();
-    })
-    .catch((error) => {
-      console.error("Error al guardar:", error);
-      alert('Hubo un error al guardar los registros. Intenta nuevamente.');
-    })
-    .finally(() => {
-      btnGuardar.disabled = false;
-      btnGuardar.textContent = "Guardar Registros";
+      const promesas = Array.from(checkboxes).map(chk => {
+        const nuevoRegistro = {
+          docente: docente,
+          grado: grado,
+          aula: aula,
+          area: area,
+          estudiante: chk.value,
+          estado: estado,
+          fecha: fechaFormateada,
+          fechaFiltro: fechaFiltro
+        };
+        return database.ref('asistencia').push(nuevoRegistro);
+      });
+
+      Promise.all(promesas)
+        .then(() => {
+          alert(`¡Se registraron con éxito ${checkboxes.length} estudiante(s)!`);
+          document.getElementById('attendanceForm').reset();
+          cargarEstudiantes();
+        })
+        .catch((error) => {
+          console.error("Error al guardar en Firebase:", error);
+          alert('Hubo un error al guardar los registros. Intenta nuevamente.');
+        })
+        .finally(() => {
+          if (btnGuardar) {
+            btnGuardar.disabled = false;
+            btnGuardar.textContent = "Guardar Registros";
+          }
+        });
     });
+  }
 });
