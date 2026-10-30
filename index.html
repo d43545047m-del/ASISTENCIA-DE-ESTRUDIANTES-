@@ -6,6 +6,7 @@
   <title>Registro de Asistencia</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   
+  <!-- Cargar Firebase antes de los scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="nominaEstudiantes.js"></script>
@@ -82,9 +83,8 @@
               <option value="VASQUEZ VEGA MARIO">VASQUEZ VEGA MARIO</option>
               <option value="VILLARREAL VENEGAS ROCIO">VILLARREAL VENEGAS ROCIO</option>
               <option value="ZAVALETA CASTAÑEDA ROCIO">ZAVALETA CASTAÑEDA ROCIO</option>
-              <option value="FERNANDEZ LOPEZ AMPARO SOLEDAD">FERNANDEZ LOPEZ AMPARO SOLEDAD</option>
             </select>
-          </div> 
+          </div>
 
           <!-- Grado -->
           <div class="col-md-2">
@@ -130,11 +130,10 @@
               <option value="EDUCACIÓN RELIGIOSA">EDUCACIÓN RELIGIOSA</option>
               <option value="INGLÉS">INGLÉS</option>
               <option value="MATEMÁTICA">MATEMÁTICA</option>
-              <option value="TUTORÍA">TUTORÍA</option>
             </select>
           </div>
 
-          <!-- Estudiantes con checkboxes -->
+          <!-- Estudiante(s) con Checkboxes -->
           <div class="col-md-8">
             <label class="form-label fw-semibold">Estudiante(s)</label>
             <div id="contenedorEstudiantes" class="border rounded p-2 bg-white" style="max-height: 180px; overflow-y: auto;">
