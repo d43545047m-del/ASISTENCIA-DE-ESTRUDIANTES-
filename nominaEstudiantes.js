@@ -1,4 +1,4 @@
-const nominaEstudiantes = {
+window.nominaEstudiantes = {
   "1ro Secundaria": {
     "Sección A": [
       "ACEVEDO VASQUEZ, CELESTE DE LOS ANGELES",
