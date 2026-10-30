@@ -1,4 +1,4 @@
-// Configuración de Firebase
+// Configuración de Firebase Realtime Database
 const firebaseConfig = {
   apiKey: "AIzaSyCqheRJkcSJVPG1XuMEiZlithQKUYV9JKE",
   authDomain: "control-de-asistencia-aef47.firebaseapp.com",
@@ -9,38 +9,12 @@ const firebaseConfig = {
   appId: "1:918828594178:web:e44ff1902cfc4502fca31b"
 };
 
-// Inicializar Firebase
+// Inicialización de Firebase
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-// Nómina respaldada dentro del mismo script
-const nominaInterna = {
-  "1ro Secundaria": {
-    "Sección A": ["ACEVEDO VASQUEZ, CELESTE DE LOS ANGELES", "AGUILAR CARDOZO, TATIANA", "ALAYO FLORES, MARIAFE BELLAMIRA", "ARTEAGA ALVARADO, AYXA VALERIA", "CARDENAS ACOSTA, CAMILA LUCERO"],
-    "Sección B": ["ALVAREZ MARIN, SOFIA", "BERMUDEZ RIOS, LUCIA", "CABANILLAS DIAZ, ANA"],
-    "Sección C": ["CASTRO GOMEZ, VALENTINA", "DIAZ TORRES, FERNANDA"]
-  },
-  "2do Secundaria": {
-    "Sección A": ["ESPINOZA RUIZ, CAMILA", "FLORES MENDOZA, CARLA"],
-    "Sección B": ["GARCIA LOPEZ, DANIELA", "HERRERA ROJAS, FABIANA"]
-  },
-  "3ro Secundaria": {
-    "Sección A": ["IBANEZ VEGA, GABRIELA", "JIMENEZ CRUZ, HELEN"],
-    "Sección B": ["LEON SILVA, ISABELA", "MARTINEZ PAREDES, JULIA"],
-    "Sección C": ["MORALES ORTIZ, KIARA", "NAVARRO GUTIERREZ, LIA", "NUNEZ QUINTERO, MARIA"]
-  },
-  "4to Secundaria": {
-    "Sección A": ["OLIVARES REYES, NATALIA", "PEREZ SANCHEZ, PAOLA"],
-    "Sección B": ["QUINTERO RAMOS, ROSA", "RODRIGUEZ SOTO, VALERIA"]
-  },
-  "5to Secundaria": {
-    "Sección A": ["SANCHEZ CASTRO, ANDREA", "TORRES VARGAS, BIANCA"],
-    "Sección B": ["URBINA CHAVEZ, CAROLINA", "VALDEZ MORA, DIANA"]
-  }
-};
-
-// Función para renderizar la lista
+// Función principal para poblar el contenedor de estudiantes
 function cargarEstudiantes() {
   const elGrado = document.getElementById('grado');
   const elAula = document.getElementById('aula');
@@ -58,26 +32,20 @@ function cargarEstudiantes() {
     return;
   }
 
-  // Verificar en nómina global externa o en nómina interna
-  let lista = null;
-  if (typeof window.nominaEstudiantes !== 'undefined' && window.nominaEstudiantes[grado]) {
+  // Obtener nómina cargada globalmente
+  let lista = [];
+  if (typeof window.nominaEstudiantes !== 'undefined' && window.nominaEstudiantes[grado] && window.nominaEstudiantes[grado][aula]) {
     lista = window.nominaEstudiantes[grado][aula];
-  }
-  if (!lista && nominaInterna[grado]) {
-    lista = nominaInterna[grado][aula];
-  }
-
-  // Generación de lista por defecto para secciones adicionales (D, E, F, G, H)
-  if (!lista || lista.length === 0) {
-    lista = [
-      `ALUMNO 01 (${grado} - ${aula})`,
-      `ALUMNO 02 (${grado} - ${aula})`,
-      `ALUMNO 03 (${grado} - ${aula})`,
-      `ALUMNO 04 (${grado} - ${aula})`
-    ];
+  } else if (typeof nominaEstudiantes !== 'undefined' && nominaEstudiantes[grado] && nominaEstudiantes[grado][aula]) {
+    lista = nominaEstudiantes[grado][aula];
   }
 
-  // Insertar en HTML
+  if (lista.length === 0) {
+    contenedor.innerHTML = '<span class="text-muted small">No hay alumnas registradas para este grado y sección.</span>';
+    return;
+  }
+
+  // Renderizar cada estudiante con su respectivo checkbox
   lista.forEach((estudiante, idx) => {
     const div = document.createElement('div');
     div.className = 'form-check my-1';
@@ -91,7 +59,7 @@ function cargarEstudiantes() {
   });
 }
 
-// Eventos de escucha
+// Eventos del formulario
 document.addEventListener('DOMContentLoaded', () => {
   const elGrado = document.getElementById('grado');
   const elAula = document.getElementById('aula');
@@ -100,9 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (elGrado) elGrado.addEventListener('change', cargarEstudiantes);
   if (elAula) elAula.addEventListener('change', cargarEstudiantes);
 
-  // Intentar renderizado inicial
+  // Intento de carga inicial por si ya se seleccionó una opción
   cargarEstudiantes();
 
+  // Envío a Firebase
   if (elForm) {
     elForm.addEventListener('submit', function(e) {
       e.preventDefault();
